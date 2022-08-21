@@ -25,11 +25,11 @@ let producer, consumer, myData = [];
         });
         producer = await memphis.producer({
             stationName: "glitch",
-            producerName: "myProducer"
+            producerName: "myProducer1"
         });
         consumer = await memphis.consumer({
             stationName: "glitch",
-            consumerName: "myConsumer",
+            consumerName: "myConsumer1",
             consumerGroup: ""
         });
         consumer.on("message", message => {
