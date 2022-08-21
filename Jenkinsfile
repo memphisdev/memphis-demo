@@ -13,11 +13,23 @@ node {
 		sh 'docker login -u $DOCKER_HUB_CREDS_USR -p $DOCKER_HUB_CREDS_PSW'
 	    }
     }
+		
+	stage('Create memphis namespace in Kubernetes'){
+      sh "aws eks --region eu-central-1 update-kubeconfig --name sandbox-cluster"
+      sh "kubectl create namespace memphis-demo --dry-run=client -o yaml | kubectl apply -f -"
+      sh "aws s3 cp s3://memphis-jenkins-backup-bucket/regcred.yaml ."
+      sh "kubectl apply -f regcred.yaml -n memphis-demo"
+      sh "kubectl patch serviceaccount default -p '{\"imagePullSecrets\": [{\"name\": \"regcred\"}]}' -n memphis-demo"
+      //sh "sleep 40"
+    } 
 	  
     stage('Build and push docker image to Docker Hub') {
-	sh "docker buildx build --push --tag ${repoUrlPrefix}/${imageName} --platform linux/amd64,linux/arm64 ."
+		sh "docker buildx build --push --tag ${repoUrlPrefix}/${imageName} --platform linux/amd64,linux/arm64 ."
     }
 	  
+
+	  
+	
     notifySuccessful()
 	  
   } catch (e) {
