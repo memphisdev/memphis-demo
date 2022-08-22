@@ -9,13 +9,14 @@ node {
   try{
 	  
     stage('Login to Docker Hub') {
-	withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_CREDS_USR', passwordVariable: 'DOCKER_HUB_CREDS_PSW')]) {
-		sh 'docker login -u $DOCKER_HUB_CREDS_USR -p $DOCKER_HUB_CREDS_PSW'
-	    }
+      withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_CREDS_USR', passwordVariable: 'DOCKER_HUB_CREDS_PSW')]) {
+	sh 'docker login -u $DOCKER_HUB_CREDS_USR -p $DOCKER_HUB_CREDS_PSW'
+      }
     }
 		
-	stage('Create memphis namespace in Kubernetes'){
+    stage('Create memphis namespace in Kubernetes'){
       sh "aws eks --region eu-central-1 update-kubeconfig --name sandbox-cluster"
+      sh "kubectl delete namespace memphis-demo"
       sh "kubectl create namespace memphis-demo --dry-run=client -o yaml | kubectl apply -f -"
       sh "aws s3 cp s3://memphis-jenkins-backup-bucket/regcred.yaml ."
       sh "kubectl apply -f regcred.yaml -n memphis-demo"
@@ -24,9 +25,13 @@ node {
     } 
 	  
     stage('Build and push docker image to Docker Hub') {
-		sh "docker buildx build --push --tag ${repoUrlPrefix}/${imageName} --platform linux/amd64,linux/arm64 ."
+      sh "docker buildx build --push --tag ${repoUrlPrefix}/${imageName} --platform linux/amd64,linux/arm64 ."
     }
-	  
+  
+    stage('Push to sandbox'){
+      sh "aws eks --region eu-central-1 update-kubeconfig --name sandbox-cluster"
+      sh "helm upgrade --atomic --install memphis-demo helm --create-namespace --namespace memphis-demo"
+    }
 
 	  
 	
