@@ -16,7 +16,7 @@ node {
 		
     stage('Create memphis namespace in Kubernetes'){
       sh "aws eks --region eu-central-1 update-kubeconfig --name sandbox-cluster"
-      sh "kubectl delete namespace memphis-demo"
+      sh "kubectl delete namespace memphis-demo --ignore-not-found=true"
       sh "kubectl create namespace memphis-demo --dry-run=client -o yaml | kubectl apply -f -"
       sh "aws s3 cp s3://memphis-jenkins-backup-bucket/regcred.yaml ."
       sh "kubectl apply -f regcred.yaml -n memphis-demo"
