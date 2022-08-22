@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . ./
 RUN apk add python3
 RUN npm install --silent
-CMD [“node”, “index.js”]
+CMD ["node", "server.js"]
