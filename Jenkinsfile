@@ -33,6 +33,13 @@ node {
       sh "helm upgrade --atomic --install memphis-demo helm --create-namespace --namespace memphis-demo"
     }
 
+    stage('Configure sandbox demo URLs'){
+    //broker url section      
+      sh "aws s3 cp s3://memphis-jenkins-backup-bucket/sandbox_files/update_demo_sandbox_record.json ."  //demo.sandbox.memphis.dev redirect to new LB record
+      sh(script: """sed "s/\\"DNSName\\": \\"\\"/\\"DNSName\\": \\"\$(kubectl get svc -n memphis | grep "memphis-demo" | awk '{print \"dualstack.\"\$4}')\\"/g"  update_demo_sandbox_record.json > record2.json""",  returnStdout: true)
+      sh(script: """aws route53 change-resource-record-sets --hosted-zone-id Z05132833CK9UXS6W3I0E --change-batch file://record2.json > status2.txt""",    returnStdout: true) 
+      sh "rm -rf record2.json update_demo_sandbox_record.json"
+    }
 	  
 	
     notifySuccessful()
