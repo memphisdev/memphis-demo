@@ -1,5 +1,6 @@
 const express = require('express');
 const memphis = require("memphis-dev");
+const crypto = require('crypto');
 require('dotenv').config()
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -14,6 +15,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+const id = crypto.randomBytes(5).toString('hex');
+
 let producer, consumer, myData = [];
 
 (async function () {
@@ -24,12 +27,12 @@ let producer, consumer, myData = [];
             connectionToken: process.env.MEMPHIS_CT
         });
         producer = await memphis.producer({
-            stationName: "glitch",
-            producerName: "myProducer1"
+            stationName: "demo-app",
+            producerName: "myProducer1" + id
         });
         consumer = await memphis.consumer({
-            stationName: "glitch",
-            consumerName: "myConsumer1",
+            stationName: "demo-app",
+            consumerName: "myConsumer1" + id,
             consumerGroup: ""
         });
         consumer.on("message", message => {
