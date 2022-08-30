@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
-app.get('/server', (req, res) => {
+app.all('/server', (req, res) => {
     console.log(req.body);
     res.send('Hello World!');
 });
