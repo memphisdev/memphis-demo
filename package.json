@@ -1,5 +1,5 @@
 {
-  "name": "glitch-demo",
+  "name": "memphis-demo",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/memphisdev/glitch-demo.git"
+    "url": "git+https://github.com/memphisdev/memphis-demo.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/memphisdev/glitch-demo/issues"
+    "url": "https://github.com/memphisdev/memphis-demo/issues"
   },
-  "homepage": "https://github.com/memphisdev/glitch-demo#readme",
+  "homepage": "https://github.com/memphisdev/memphis-demo#readme",
   "dependencies": {
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
