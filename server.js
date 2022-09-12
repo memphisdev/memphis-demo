@@ -39,6 +39,10 @@ let producer, consumer, myData = [];
             myData.push(message.getData().toString());
             message.ack();
         });
+        consumer.on("error", (error) => {
+           console.log(error);
+           process.exit(5);
+        }
     } catch (ex) {
         console.log(ex);
         memphis.close();
