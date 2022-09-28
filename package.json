@@ -24,7 +24,7 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "memphis-dev": "^0.4.0",
+    "memphis-dev": "^0.4.1",
     "multiparty": "^4.2.3",
     "random-hash": "^4.0.1"
   }
