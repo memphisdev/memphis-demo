@@ -14,9 +14,9 @@ let producer, consumer, myData = [];
 (async function () {
     try {
         await memphis.connect({
-            host: "localhost",
-            username: "root",
-            connectionToken: "memphis"
+            host: "broker.sandbox.memphis.dev",
+            username: process.env.MEMPHIS_USERNAME,
+            connectionToken: process.env.MEMPHIS_CT
         });
         producer = await memphis.producer({
             stationName: "demo-app",
