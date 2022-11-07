@@ -1,13 +1,11 @@
 const express = require('express');
 const memphis = require("memphis-dev");
 const quotes = require('./data.json');
-const crypto = require('crypto');
 require('dotenv').config()
 var bodyParser = require('body-parser');
 var cors = require('cors');
 const PORT = 3000;
 
-const id = crypto.randomBytes(5).toString('hex');
 
 let producer, consumer, myData = [];
 
@@ -20,15 +18,18 @@ let producer, consumer, myData = [];
         });
         producer = await memphis.producer({
             stationName: "demo-app",
-            producerName: "myProducer1" + id
+            producerName: "producer",
+            genUniqueSuffix: true
         });
         consumer = await memphis.consumer({
             stationName: "demo-app",
-            consumerName: "myConsumer1" + id,
-            consumerGroup: ""
+            consumerName: "consumer",
+            genUniqueSuffix: true
         });
         consumer.on("message", message => {
-            myData.push(message.getData().toString());
+            const headers = message.getHeaders();
+            if (headers["source"][0] !== "memphis-internal-msg")
+                myData.push(message.getData().toString());
             message.ack();
         });
         consumer.on("error", (error) => {
@@ -43,7 +44,6 @@ let producer, consumer, myData = [];
         consumer_background = await memphis.consumer({
             stationName: "demo-app",
             consumerName: "always_on_consumer",
-            consumerGroup: ""
         });
 
         consumer_background.on("message", message => {
@@ -55,8 +55,11 @@ let producer, consumer, myData = [];
 
         setInterval(async () => {
             const msg = quotes[Math.floor(Math.random() * quotes.length)].text;
+            const headers = memphis.headers();
+            headers.add("source", "memphis-internal-msg")
             await producer_background.produce({
-                message: Buffer.from(msg)
+                message: Buffer.from(msg),
+                headers
             });
         }, 15000);
 
