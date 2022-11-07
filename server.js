@@ -28,7 +28,7 @@ let producer, consumer, myData = [];
         });
         consumer.on("message", message => {
             const headers = message.getHeaders();
-            if (headers["source"][0] !== "memphis-internal-msg")
+            if (headers["source"] && headers["source"][0] !== "memphis-internal-msg")
                 myData.push(message.getData().toString());
             message.ack();
         });
