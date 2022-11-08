@@ -28,7 +28,7 @@ let producer, consumer, myData = [];
         });
         consumer.on("message", message => {
             const headers = message.getHeaders();
-            if (headers["source"] && headers["source"][0] !== "memphis-internal-msg")
+            if (headers["source"] && headers["source"][0] === "user-msg")
                 myData.push(message.getData().toString());
             message.ack();
         });
@@ -83,8 +83,11 @@ let producer, consumer, myData = [];
 
         app.post('/produce', async function (req, res, next) {
             var msg = req.body.msg;
+            const headers = memphis.headers();
+            headers.add("source", "user-msg")
             await producer.produce({
-                message: Buffer.from(msg)
+                message: Buffer.from(msg),
+                headers
             });
             res.sendStatus(200);
         });
