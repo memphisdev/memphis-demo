@@ -57,10 +57,15 @@ let producer, consumer, myData = [];
             const msg = quotes[Math.floor(Math.random() * quotes.length)].text;
             const headers = memphis.headers();
             headers.add("source", "memphis-internal-msg")
-            await producer_background.produce({
-                message: Buffer.from(msg),
-                headers
-            });
+            try {
+                await producer_background.produce({
+                    message: Buffer.from(msg),
+                    headers
+                });
+            } catch (ex) {
+                if (ex.message.includes("schema"))
+                    console.log(ex.message)
+            }
         }, 15000);
 
         const app = express();
@@ -85,10 +90,15 @@ let producer, consumer, myData = [];
             var msg = req.body.msg;
             const headers = memphis.headers();
             headers.add("source", "user-msg")
-            await producer.produce({
-                message: Buffer.from(msg),
-                headers
-            });
+            try {
+                await producer.produce({
+                    message: Buffer.from(msg),
+                    headers
+                });
+            } catch (ex) {
+                if (ex.message.includes("schema"))
+                    console.log(ex.message)
+            }
             res.sendStatus(200);
         });
 
