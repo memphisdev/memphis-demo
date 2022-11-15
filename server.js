@@ -26,6 +26,13 @@ let producer, consumer, myData = [];
             consumerName: "consumer",
             genUniqueSuffix: true
         });
+        consumer1 = await memphis.consumer({
+            stationName: "demo-app",
+            consumerName: "consumer-with-issues",
+            genUniqueSuffix: true,
+            maxAckTimeMs: 15000,
+            maxMsgDeliveries: 12
+        });
         consumer.on("message", message => {
             const headers = message.getHeaders();
             if (headers["source"] && headers["source"][0] === "user-msg")
@@ -33,6 +40,13 @@ let producer, consumer, myData = [];
             message.ack();
         });
         consumer.on("error", (error) => {
+            console.log(error);
+            process.exit(5);
+        });
+        consumer1.on("message", message => {
+            // intentionally cause poison messages
+        });
+        consumer1.on("error", (error) => {
             console.log(error);
             process.exit(5);
         });
